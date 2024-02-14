@@ -28,13 +28,12 @@ def get_tube_deflection(load, span, outer_diameter, inner_diameter):
     elasticity_modulus = 68900
     inertia = (math.pi / 64) * ((outer_diameter ** 4) - (inner_diameter ** 4))  # moment of inertia
     moment = (load * (span ** 2)) / (2 * elasticity_modulus * inertia)  # deflection
-    deflection_mm = abs(moment) * 1000  # Convert deflection from meters to millimeters and ensure positive value
-    return deflection_mm
+    deflection = abs(moment) * 1000  # Convert deflection from meters to millimeters and ensure positive value
+    return deflection
 
 
-def convert_gsm_to_newtons(g, length, width):
-    print(g * ((length * width) / 1000) * 9.8)
-    return g * ((length * width) / 1000) * 9.8
+def get_load(gsm, length, width):
+    return ((gsm * length * width) / conversion_value) * 9.8
 
 
 '''
@@ -76,7 +75,7 @@ def get_deflections(shade_width, shade_drop, shade_weight):
     shade_drop = float(shade_drop)
     shade_weight = float(shade_weight)
 
-    load = convert_gsm_to_newtons(shade_weight, shade_width, shade_drop)
+    load = get_load(shade_weight, shade_width, shade_drop)
     span = shade_width * conversion_value  # conversion value is used to get the proper deflection comparison
     for tube in tubes:
         deflection = get_tube_deflection(load, span, tube['outerDiameter'], tube['innerDiameter'])
