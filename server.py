@@ -17,7 +17,7 @@ tubes = [
 ]
 
 # The Deflection limit was determined by Industry standard
-deflection_limit = 5  # max of 1mm of deflection
+deflection_limit = 5  # max of 5mm of deflection
 conversion_value = 1000  # 1 m = 1000 mm
 
 tube_deflections = []
@@ -25,15 +25,15 @@ available_tubes = []
 
 
 def get_tube_deflection(load, span, outer_diameter, inner_diameter):
-    elasticity_modulus = 68900
+    elasticity_modulus = 68900  # Derived
     inertia = (math.pi / 64) * ((outer_diameter ** 4) - (inner_diameter ** 4))  # moment of inertia
-    moment = (load * (span ** 2)) / (2 * elasticity_modulus * inertia)  # deflection
-    deflection = abs(moment) * 1000  # Convert deflection from meters to millimeters and ensure positive value
-    return deflection
+    moment = (5 * load * (span ** 4)) / (384 * elasticity_modulus * inertia)  # Deflection Formula
+
+    return moment
 
 
-def get_load(gsm, length, width):
-    return ((gsm * length * width) / conversion_value) * 9.8
+def get_load(gsm, length):
+    return (((gsm/conversion_value) * length) / conversion_value) * 9.81
 
 
 '''
@@ -66,6 +66,7 @@ def main():
 '''
 
 
+# shade Width and drop will be in M and weight will be in gsm
 @app.route("/get-deflections/<shade_width>/<shade_drop>/<shade_weight>")
 def get_deflections(shade_width, shade_drop, shade_weight):
     tube_deflections.clear()
@@ -75,7 +76,7 @@ def get_deflections(shade_width, shade_drop, shade_weight):
     shade_drop = float(shade_drop)
     shade_weight = float(shade_weight)
 
-    load = get_load(shade_weight, shade_width, shade_drop)
+    load = get_load(shade_weight, shade_drop)
     span = shade_width * conversion_value  # conversion value is used to get the proper deflection comparison
     for tube in tubes:
         deflection = get_tube_deflection(load, span, tube['outerDiameter'], tube['innerDiameter'])
@@ -83,7 +84,6 @@ def get_deflections(shade_width, shade_drop, shade_weight):
         tube_deflections.append(deflection)
         if deflection <= deflection_limit:
             available_tubes.append(tube['name'])
-
     return tube_deflections
 
 
