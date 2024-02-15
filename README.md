@@ -22,13 +22,11 @@
     converstion_value = 1000 to turn into kg^2
     
     then multiply by 9.8 to get the value in Newtons
+    
+    How it is implemented:
+        g/m^2 / 1000 =>  kg/m^2 * drop / 1000 =>  drop(kg/mm^2) * 9.81 = Newtons
 ```
 
-### Requests
+### How to use
 ***
-#### HTTPS://URL:PORT/get-deflections/:shade_width/:shade_drop/:shade_weight
-* Returns an array with the deflections of every tube stored in mm.
-***
-#### HTTPS://URL:PORT/get-available-tubes
-* Returns an array of tubes that are equal to or below the deflection limit
-***
+There are 3 
