@@ -98,12 +98,12 @@ def get_input(prompt):
     response = None
 
     while not valid_input:
-        response = input(prompt)
-        if response is float or int:
+        response = input(prompt).lower()
+        if response.isdigit() or response.isdecimal():
             response = float(response)
             valid_input = True
         else:
-            if response == 'q' or response == 'r':
+            if response in ('q', 'r'):
                 break
             else:
                 print("Invalid input, try again.", end="\n")
@@ -142,6 +142,7 @@ def main():
 
         print(instructions)
 
+        response = ''
         for measurement in measurements:
             response = get_input(measurement['prompt'])
             if response == 'q':
@@ -151,7 +152,8 @@ def main():
                 break
             else:
                 measurement['value'] = response
-        else:
+
+        if response != 'r':
             shadeWidth = measurements[0].get('value')
             shadeDrop = measurements[1].get('value')
             shadeWeight = measurements[2].get('value')
