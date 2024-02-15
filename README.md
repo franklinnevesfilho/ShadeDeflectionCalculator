@@ -29,4 +29,15 @@
 
 ### How to use
 ***
-There are 3 
+#### Setting up Deflection Limit
+The deflection limit file titled 'deflectionLimit.txt' 
+contains a single number that represents the deflection limit in mm for the chart.
+If no value is specified the limit will default to 0
+***
+#### Setting up Tube data
+The program already has a list of tubes, however if you wish to add your own tube. In a new line you must write this information.
+```
+    tube name, outer diameter, inner diameter
+    
+    Ex: 83mm, 83.5, 60
+```

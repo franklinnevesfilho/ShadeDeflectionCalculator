@@ -1,6 +1,9 @@
 import math
 import matplotlib.pyplot as plt
 
+# Error messages
+fileNotFound = 'Cannot find file: '
+
 #  This Tube data was requested from Vertilux
 tubes = [
     {"name": "32mm LGH", "outerDiameter": 32, "innerDiameter": 30},
@@ -14,11 +17,67 @@ tubes = [
 ]
 
 # The Deflection limit was determined by Industry standard
-deflection_limit = 2.5  # max of 5mm of deflection
+deflection_limit = 5  # will default to 0 if not specified in deflectionLimit.txt
 conversion_value = 1000  # 1 m = 1000 mm
 
 tube_deflections = []
 available_tubes = []
+
+
+# Get Data from files
+def read_deflection_limit(filename='deflectionLimit.txt'):
+    global deflection_limit
+    try:
+        with open(filename, 'r') as file:
+            content = file.readline().strip()  # read file
+            limit = str(content)
+            if limit is int or float:  # is valid? if not switch to default
+                deflection_limit = float(limit)
+    except FileNotFoundError:
+        print(f"{fileNotFound}'{filename}'")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("Loaded deflection limit --------------------\n")
+
+
+def read_tube_data(filename='tubeData.txt'):
+    global tubes
+    try:
+        with open(filename, 'r') as file:
+            next(file)  # Skip instruction line
+
+            for line in file:
+                parts = line.strip().split(',')
+                if len(parts) < 3:  # ensures only tubes with all their values will be read
+                    break
+                else:
+                    if parts[1] is int or float \
+                            and parts[2] is int or float:
+                        # If valid values create tube
+                        newTube = {
+                            "name": parts[0],
+                            "outerDiameter": float(parts[1]),
+                            "innerDiameter": float(parts[2])
+                        }
+                        # Is tube already added
+                        tubeExists = False
+                        for tube in tubes:
+                            #  If tube has the same name and values exit
+                            if newTube["name"] == tube["name"] and \
+                                newTube["outerDiameter"] == tube["outerDiameter"] and \
+                                    newTube["innerDiameter"] == tube["innerDiameter"]:
+                                tubeExists = True
+                                break
+                        if not tubeExists:  # add tube if not present
+                            tubes.append(newTube)
+
+    except FileNotFoundError:
+        print(f"{fileNotFound}'{filename}'")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("Loaded Tube Data --------------------\n")
 
 
 def get_tube_deflection(load, span, outer_diameter, inner_diameter):
@@ -31,7 +90,7 @@ def get_tube_deflection(load, span, outer_diameter, inner_diameter):
 
 def get_load(gsm, drop):
     #     g/m^2 / 1000 = kg/m^2 * drop / 1000 =>  drop(kg/mm^2) * 9.81 = Newtons
-    return (((gsm/conversion_value) * drop) / conversion_value) * 9.81
+    return (((gsm / conversion_value) * drop) / conversion_value) * 9.81
 
 
 def get_input(prompt):
@@ -115,4 +174,6 @@ def main():
 
 
 if __name__ == "__main__":
+    read_tube_data()
+    read_deflection_limit()
     main()
