@@ -1,4 +1,4 @@
-Description: Each line represents a tube with its name, outer diameter, and inner diameter separated by commas.
+Each line represents a tube with its name, outer diameter, and inner diameter separated by commas.
 32mm LGH,32,30
 32mm STD,32.6,30
 38mm STD,38.43,35.89
