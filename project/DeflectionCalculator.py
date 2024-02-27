@@ -1,6 +1,10 @@
 import math
 import matplotlib.pyplot as plt
 
+# Bottom rail weight in G / MM
+BOTTOM_RAIL = 0.0000115
+
+
 # Error messages
 fileNotFound = 'Cannot find file: '
 
@@ -89,8 +93,11 @@ def get_tube_deflection(load, span, outer_diameter, inner_diameter):
 
 
 def get_load(gsm, drop):
-    #     g/m^2 / 1000 = kg/m^2 * drop / 1000 =>  drop(kg/mm^2) * 9.81 = Newtons
-    return (((gsm / conversion_value) * drop) / conversion_value) * 9.81
+    return ((((gsm / conversion_value) * drop) / conversion_value) + (BOTTOM_RAIL / conversion_value)) * 9.81
+
+
+def is_float(s):
+    return s.replace('.', '', 1).lstrip('-').isnumeric()
 
 
 def get_input(prompt):
@@ -99,7 +106,7 @@ def get_input(prompt):
 
     while not valid_input:
         response = input(prompt).lower()
-        if response.isdigit() or response.isdecimal():
+        if is_float(response):
             response = float(response)
             valid_input = True
         else:
