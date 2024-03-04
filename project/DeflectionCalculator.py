@@ -2,8 +2,7 @@ import math
 import matplotlib.pyplot as plt
 
 # Bottom rail weight in G / MM
-BOTTOM_RAIL = 0.0000115
-
+bottom_rail = 0.0000115
 
 # Error messages
 fileNotFound = 'Cannot find file: '
@@ -21,15 +20,18 @@ tubes = [
 ]
 
 # The Deflection limit was determined by Industry standard
-deflection_limit = 5  # will default to 0 if not specified in deflectionLimit.txt
+deflection_limit = 5  # will default to 0 if not specified in measurements.txt
 conversion_value = 1000  # 1 m = 1000 mm
 
 tube_deflections = []
 available_tubes = []
 
 
-# Get Data from files
-def read_deflection_limit(filename='deflectionLimit.txt'):
+def is_float(s):
+    return s.replace('.', '', 1).lstrip('-').isnumeric()
+
+
+def read_deflection_limit(filename='measurements.txt'):
     global deflection_limit
     try:
         with open(filename, 'r') as file:
@@ -69,7 +71,7 @@ def read_tube_data(filename='tubeData.txt'):
                         for tube in tubes:
                             #  If tube has the same name and values exit
                             if newTube["name"] == tube["name"] and \
-                                newTube["outerDiameter"] == tube["outerDiameter"] and \
+                                    newTube["outerDiameter"] == tube["outerDiameter"] and \
                                     newTube["innerDiameter"] == tube["innerDiameter"]:
                                 tubeExists = True
                                 break
@@ -80,8 +82,38 @@ def read_tube_data(filename='tubeData.txt'):
         print(f"{fileNotFound}'{filename}'")
     except Exception as e:
         print(f"Error: {e}")
+    print("---------------Collected Tube Data --------------------\n")
 
-    print("Loaded Tube Data --------------------\n")
+
+def read_measurements(datafile="measurements.txt"):
+    read_tube_data()
+
+    global deflection_limit
+    global bottom_rail
+
+    try:
+        with open(datafile, 'r') as file:
+            next(file) # skip instruction line
+            content = file.readline().strip()  # read file
+
+            limit = str(content)
+            if limit is int or float:  # is valid? if not switch to default
+                print("---------------Collected deflection limit----------------")
+                deflection_limit = float(limit)
+
+            next(file)  # skip instruction line
+
+            content = file.readline().strip()
+            weight = str(content)
+            if weight is int or float:
+                print("---------------Collected bottom rail weight---------------")
+                bottom_rail = float(weight)
+    except FileNotFoundError:
+        print(f"{fileNotFound}'{datafile}'")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("---------------Loaded all measurements---------------")
 
 
 def get_tube_deflection(load, span, outer_diameter, inner_diameter):
@@ -93,11 +125,8 @@ def get_tube_deflection(load, span, outer_diameter, inner_diameter):
 
 
 def get_load(gsm, drop):
-    return ((((gsm / conversion_value) * drop) / conversion_value) + (BOTTOM_RAIL / conversion_value)) * 9.81
-
-
-def is_float(s):
-    return s.replace('.', '', 1).lstrip('-').isnumeric()
+    global bottom_rail
+    return ((((gsm / conversion_value) * drop) / conversion_value) + (bottom_rail / conversion_value)) * 9.81
 
 
 def get_input(prompt):
@@ -135,7 +164,7 @@ def main():
     while True:
         tube_deflections.clear()
 
-        instructions = ('-----------------------------------------------------\n'
+        instructions = ('\n-----------------------------------------------------\n'
                         '  answer the following 3 questions about the shade.\n'
                         '           press "q" to quit anytime\n'
                         '               press "r" to reset\n'
@@ -179,10 +208,7 @@ def main():
             # Show chart
             show_plot(shadeWidth, shadeDrop)
 
-            return 0
-
 
 if __name__ == "__main__":
-    read_tube_data()
-    read_deflection_limit()
+    read_measurements()
     main()

@@ -1,0 +1,4 @@
+Deflection limit ( mm ):
+1
+Bottom rail weight ( g/mm ):
+0.000005

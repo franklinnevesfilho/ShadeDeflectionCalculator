@@ -1,4 +1,4 @@
-('C:\\Users\\frank\\projects\\vertilux\\tubeDeflection\\project\\build\\deflectioncalculator\\PYZ-00.pyz',
+('C:\\Users\\frank\\projects\\vertilux\\tubeDeflection\\project\\build\\deflectionCalculator\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\frank\\projects\\vertilux\\tubeDeflection\\.venv\\Lib\\site-packages\\PIL\\__init__.py',
    'PYMODULE'),
